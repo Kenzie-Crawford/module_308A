@@ -1,13 +1,19 @@
-let counter = 0;
-
-function testStack() {
-    counter++;
-    testStack();
+function trampoline(fn) {
+    let result = fn();
+    while (typeof result === 'function') {
+        result = result();
+    }
+    return result;
 }
 
-try {
-    testStack();
-} catch (err) {
-    console.log("Error:", err.message);
-    console.log("Stack depth:", counter);
+function countUp(n) {
+    if (n === 0) return "Done!"; 
+        
+     console.log(n);
+    return function () {
+        return countUp(n - 1);
+    }
 }
+const result = trampoline(() => countUp(50000));
+console.log('No stack overflow!', result);
+
