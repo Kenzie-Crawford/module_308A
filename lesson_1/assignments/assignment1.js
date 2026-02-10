@@ -7,13 +7,13 @@ function trampoline(fn) {
 }
 
 function countUp(n) {
-    if (n === 0) return "Done!"; 
+    
         
      console.log(n);
     return function () {
-        return countUp(n - 1);
+        return countUp(n + 1);
     }
 }
-const result = trampoline(() => countUp(50000));
+const result = trampoline(() => countUp(0));
 console.log('No stack overflow!', result);
 
