@@ -111,16 +111,16 @@ robin.companion = leo;
 
 
 
-console.log("\n--- Rolling ---");
+
 robin.roll();
 leo.roll();
 frank.roll();
 
-console.log("\n--- Scouting ---");
+
 robin.scout();
 
-console.log("\n--- Duel ---");
+
 robin.duel(merlin);
 
-console.log("\n--- Factory Check ---");
+
 console.log(healers.findByName("Robin"));
