@@ -11,7 +11,7 @@ const progressBar = document.getElementById("progressBar");
 const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
-const API_KEY = "";
+const API_KEY = "live_Hu8ooDQc3aZDhA3Vk82FgqUMyesUjRtNUHO3m0b3qOWevvbpXKoRI2qeGrYxpKWE";
 
 /**
  * 1. Create an async function "initialLoad" that does the following:
@@ -20,7 +20,21 @@ const API_KEY = "";
  *  - Each option should have a value attribute equal to the id of the breed.
  *  - Each option should display text equal to the name of the breed.
  * This function should execute immediately.
- */
+ */async function initialLoad() {
+  const response = await axios.get("https://api.thecatapi.com/v1/breeds", {
+    headers: {
+      "x-api-key": API_KEY
+    }
+  });
+  response.data.forEach(breed => {
+    const option = document.createElement("option");
+    option.value = breed.id;
+    option.textContent = breed.name;
+    breedSelect.appendChild(option);
+  });
+}
+initialLoad();
+
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
@@ -36,6 +50,39 @@ const API_KEY = "";
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+breedSelect.addEventListener("change", async (event) => {
+  const breedId = event.target.value;
+  const response = await axios.get(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}&limit=10`, {    
+    headers: {
+      "x-api-key": API_KEY
+    }
+    });
+    Carousel.clear();
+    response.data.forEach(imageData => {
+        const imgSrc = imageData.url;
+        const breed = imageData.breeds?.[0];
+        const imgAlt = breed ? breed.name :"Cat image";
+        const imgId = imageData.id;
+        const carouselItem = Carousel.createCarouselItem(imgSrc, imgAlt, imgId);
+        Carousel.appendCarousel(carouselItem);
+    }
+    );
+
+    if(!response.data.length || !response.data[0].breeds.length) {
+        infoDump.textContent = "No information available for this breed.";
+        Carousel.start();
+        return;
+    }
+    const breedInfo = response.data[0].breeds[0];
+    infoDump.innerHTML = `
+        <h2>${breedInfo.name}</h2>
+        <p><strong>Origin:</strong> ${breedInfo.origin}</p>
+        <p><strong>Temperament:</strong> ${breedInfo.temperament}</p>
+        <p><strong>Description:</strong> ${breedInfo.description}</p>
+    `;
+    Carousel.start();
+});
+
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
